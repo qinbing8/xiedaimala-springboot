@@ -1,7 +1,10 @@
 package hello.controller;
 
+import hello.entity.LoginResult;
+import hello.entity.Result;
 import hello.entity.User;
 import hello.service.UserService;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -17,6 +20,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.Map;
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
 
 @Controller
 public class AuthController {
@@ -32,15 +36,15 @@ public class AuthController {
 
     @GetMapping("/auth")
     @ResponseBody
-    public Object auth() {
+    public Result auth() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         User loggedInUser = userService.getUserByUsername(authentication == null ? null : authentication.getName());
 
         if (loggedInUser == null) {
-            return new Result("ok", "用户没有登录", false);
+            return LoginResult.success("用户没有登录", false);
         } else {
-            return new Result("ok", null, true, loggedInUser);
+            return LoginResult.success(null, true, loggedInUser);
         }
     }
 
@@ -52,42 +56,42 @@ public class AuthController {
         User loggedInUser = userService.getUserByUsername(userName);
 
         if (loggedInUser == null) {
-            //return new Result("fail", "用户没有登录", false);
-            return new Result("fail", "123", false);
+            return LoginResult.failure("用户没有登录");
         } else {
             SecurityContextHolder.clearContext();
-            return new Result("ok", "success", false);
+            return LoginResult.success("success", false);
         }
     }
 
     @PostMapping("/auth/register")
     @ResponseBody
-    public Result register(@RequestBody Map<String, String> usernameAndPassword) {
+    public Result register(@RequestBody Map<String, String> usernameAndPassword, HttpServletRequest request) {
         String username = usernameAndPassword.get("username");
         String password = usernameAndPassword.get("password");
         if (username == null || password == null) {
-            return new Result("fail", "username/password == null", false);
+            return Result.failure("username/password == null");
         }
         if (username.length() < 1 || username.length() > 15) {
-            return new Result("fail", "invalid username", false);
+            return Result.failure("invalid username");
         }
         if (password.length() < 1 || password.length() > 15) {
-            return new Result("fail", "invalid password", false);
+            return Result.failure("invalid password");
         }
 
         User user = userService.getUserByUsername(username);
 
-        if (user == null) {
+        try {
             userService.save(username, password);
-            return new Result("ok", "success!", false);
-        } else {
-            return new Result("fail", "user already exists", false);
+        } catch (DuplicateKeyException e) {
+            return Result.failure("user already exists");
         }
+        login(usernameAndPassword,request);
+        return LoginResult.success("注册成功", userService.getUserByUsername(username));
     }
 
     @PostMapping("/auth/login")
     @ResponseBody
-    public Result login(@RequestBody Map<String, Object> usernameAndPassword) {
+    public Result login(@RequestBody Map<String, String> usernameAndPassword, HttpServletRequest request) {
         String username = usernameAndPassword.get("username").toString();
         String password = usernameAndPassword.get("password").toString();
 
@@ -95,7 +99,7 @@ public class AuthController {
         try {
             userDetails = userService.loadUserByUsername(username);
         } catch (UsernameNotFoundException e) {
-            return new Result("fail", "用户不存在", false);
+            return Result.failure("用户不存在");
         }
 
         UsernamePasswordAuthenticationToken token =
@@ -107,45 +111,45 @@ public class AuthController {
             // Cookie
             SecurityContextHolder.getContext().setAuthentication(token);
 
-            return new Result("ok", "登录成功", true,
+            return LoginResult.success("登录成功", true,
                 userService.getUserByUsername(username));
         } catch (BadCredentialsException e) {
-            return new Result("fail", "密码不正确", false);
+            return Result.failure("密码不正确");
         }
     }
 
-    private static class Result {
-
-        String status;
-        String msg;
-        boolean isLogin;
-        Object data;
-
-        public Result(String status, String msg, boolean isLogin) {
-            this(status, msg, isLogin, null);
-        }
-
-        public Result(String status, String msg, boolean isLogin, Object data) {
-            this.status = status;
-            this.msg = msg;
-            this.isLogin = isLogin;
-            this.data = data;
-        }
-
-        public String getStatus() {
-            return status;
-        }
-
-        public String getMsg() {
-            return msg;
-        }
-
-        public boolean isLogin() {
-            return isLogin;
-        }
-
-        public Object getData() {
-            return data;
-        }
-    }
+    //private static class Result {
+    //
+    //    String status;
+    //    String msg;
+    //    boolean isLogin;
+    //    Object data;
+    //
+    //    public Result(String status, String msg, boolean isLogin) {
+    //        this(status, msg, isLogin, null);
+    //    }
+    //
+    //    public Result(String status, String msg, boolean isLogin, Object data) {
+    //        this.status = status;
+    //        this.msg = msg;
+    //        this.isLogin = isLogin;
+    //        this.data = data;
+    //    }
+    //
+    //    public String getStatus() {
+    //        return status;
+    //    }
+    //
+    //    public String getMsg() {
+    //        return msg;
+    //    }
+    //
+    //    public boolean isLogin() {
+    //        return isLogin;
+    //    }
+    //
+    //    public Object getData() {
+    //        return data;
+    //    }
+    //}
 }
