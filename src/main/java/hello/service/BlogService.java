@@ -2,8 +2,8 @@ package hello.service;
 
 import hello.dao.BlogDao;
 import hello.entity.Blog;
+import hello.entity.BlogListResult;
 import hello.entity.BlogResult;
-import hello.entity.User;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,7 +20,7 @@ public class BlogService {
         this.userService = userService;
     }
 
-    public BlogResult getBlogs(Integer page, Integer pageSize, Integer userId) {
+    public BlogListResult getBlogs(Integer page, Integer pageSize, Integer userId) {
         try {
             List<Blog> blogs = blogDao.getBlogs(page, pageSize, userId);
 
@@ -29,9 +29,17 @@ public class BlogService {
             // count = 3 / pageSize = 2 / page = 2
             int pageCount = count % pageSize == 0 ? count / pageSize : count / pageSize + 1;
 
-            return BlogResult.newResults(blogs, count, page, pageCount);
+            return BlogListResult.success(blogs, count, page, pageCount);
         } catch (Exception e) {
             e.printStackTrace();
+            return BlogListResult.failure("系统异常");
+        }
+    }
+
+    public BlogResult getBlogById(Integer blogId) {
+        try {
+            return BlogResult.success(blogDao.selectBlogById(blogId));
+        } catch (Exception e) {
             return BlogResult.failure("系统异常");
         }
     }

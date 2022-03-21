@@ -1,13 +1,11 @@
 package hello.controller;
 
-import hello.entity.LoginResult;
+import hello.entity.BlogResult;
 import hello.entity.Result;
-import hello.entity.User;
 import hello.service.BlogService;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -31,5 +29,11 @@ public class BlogController {
         }
 
         return blogService.getBlogs(page, 10, userId);
+    }
+
+    @GetMapping("/blog/{blogId}")
+    @ResponseBody
+    public BlogResult getBlog(@PathVariable("blogId") Integer blogId) {
+        return blogService.getBlogById(blogId);
     }
 }

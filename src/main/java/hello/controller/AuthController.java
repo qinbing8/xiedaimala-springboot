@@ -18,9 +18,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.util.Map;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
+import java.util.Map;
 
 @Controller
 public class AuthController {
@@ -85,7 +85,7 @@ public class AuthController {
         } catch (DuplicateKeyException e) {
             return Result.failure("user already exists");
         }
-        login(usernameAndPassword,request);
+        login(usernameAndPassword, request);
         return LoginResult.success("注册成功", userService.getUserByUsername(username));
     }
 
@@ -103,7 +103,7 @@ public class AuthController {
         }
 
         UsernamePasswordAuthenticationToken token =
-            new UsernamePasswordAuthenticationToken(userDetails, password, userDetails.getAuthorities());
+                new UsernamePasswordAuthenticationToken(userDetails, password, userDetails.getAuthorities());
 
         try {
             authenticationManager.authenticate(token);
@@ -112,44 +112,9 @@ public class AuthController {
             SecurityContextHolder.getContext().setAuthentication(token);
 
             return LoginResult.success("登录成功", true,
-                userService.getUserByUsername(username));
+                    userService.getUserByUsername(username));
         } catch (BadCredentialsException e) {
             return Result.failure("密码不正确");
         }
     }
-
-    //private static class Result {
-    //
-    //    String status;
-    //    String msg;
-    //    boolean isLogin;
-    //    Object data;
-    //
-    //    public Result(String status, String msg, boolean isLogin) {
-    //        this(status, msg, isLogin, null);
-    //    }
-    //
-    //    public Result(String status, String msg, boolean isLogin, Object data) {
-    //        this.status = status;
-    //        this.msg = msg;
-    //        this.isLogin = isLogin;
-    //        this.data = data;
-    //    }
-    //
-    //    public String getStatus() {
-    //        return status;
-    //    }
-    //
-    //    public String getMsg() {
-    //        return msg;
-    //    }
-    //
-    //    public boolean isLogin() {
-    //        return isLogin;
-    //    }
-    //
-    //    public Object getData() {
-    //        return data;
-    //    }
-    //}
 }

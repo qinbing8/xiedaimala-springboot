@@ -6,5 +6,4 @@ create table user
     avatar             varchar(100),
     created_at         datetime,
     updated_at         datetime
-
 )

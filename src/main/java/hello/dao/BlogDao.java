@@ -1,6 +1,7 @@
 package hello.dao;
 
 import hello.entity.Blog;
+import hello.entity.BlogResult;
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,6 +30,18 @@ public class BlogDao {
 
     public int count(Integer userId) {
         return sqlSession.selectOne("countBlog", userId);
+    }
+
+    public Blog selectBlogById(Integer id) {
+        return sqlSession.selectOne("selectBlogById", asMap("id", id));
+    }
+
+    private Map<String, Object> asMap(Object... args) {
+        Map<String, Object> result = new HashMap<>();
+        for (int i = 0; i < args.length; i += 2) {
+            result.put(args[i].toString(), args[i + 1]);
+        }
+        return result;
     }
 
 }

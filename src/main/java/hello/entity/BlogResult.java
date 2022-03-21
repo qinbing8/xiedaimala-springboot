@@ -2,35 +2,17 @@ package hello.entity;
 
 import java.util.List;
 
-public class BlogResult extends Result<List<Blog>> {
-    private int total;
-    private int page;
-    private int totalPage;
+public class BlogResult extends Result<Blog> {
 
-    public static BlogResult newResults(List<Blog> data, int total, int page, int totalPage) {
-        return new BlogResult(ResultStatus.OK, "获取成功", data, total, page, totalPage);
+    public static BlogResult success(Blog data) {
+        return new BlogResult(ResultStatus.OK, "获取成功", data);
     }
 
     public static BlogResult failure(String msg) {
-        return new BlogResult(ResultStatus.FAIL, msg, null, 0, 0, 0);
+        return new BlogResult(ResultStatus.FAIL, msg, null);
     }
 
-    protected BlogResult(ResultStatus status, String msg, List<Blog> data, int total, int page, int totalPage) {
+    protected BlogResult(ResultStatus status, String msg, Blog data) {
         super(status, msg, data);
-        this.total = total;
-        this.page = page;
-        this.totalPage = totalPage;
-    }
-
-    public int getTotal() {
-        return total;
-    }
-
-    public int getPage() {
-        return page;
-    }
-
-    public int getTotalPage() {
-        return totalPage;
     }
 }

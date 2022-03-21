@@ -16,14 +16,6 @@ public abstract class Result<T> {
     String msg;
     T data;
 
-    //public static Result failure(String message) {
-    //    return new Result("fail", message, false);
-    //}
-
-    //protected Result(ResultStatus status, String msg) {
-    //    this(status, msg, null);
-    //}
-
     protected Result(ResultStatus status, String msg, T data) {
         this.status = status;
         this.msg = msg;
