@@ -6,8 +6,8 @@ import hello.entity.BlogListResult;
 import hello.entity.BlogResult;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import javax.inject.Inject;
+import java.util.List;
 
 @Service
 public class BlogService {
@@ -43,4 +43,14 @@ public class BlogService {
             return BlogResult.failure("系统异常");
         }
     }
+
+    public BlogResult insertBlog(Blog newBlog) {
+        try {
+            return BlogResult.success("创建成功", blogDao.insertBlog(newBlog));
+        } catch (IllegalArgumentException e) {
+            return BlogResult.failure(e);
+        }
+    }
+
+
 }

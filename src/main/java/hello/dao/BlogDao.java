@@ -44,4 +44,8 @@ public class BlogDao {
         return result;
     }
 
+    public Blog insertBlog(Blog newBlog) {
+        sqlSession.insert("insertBlog", newBlog);
+        return selectBlogById(newBlog.getId());
+    }
 }

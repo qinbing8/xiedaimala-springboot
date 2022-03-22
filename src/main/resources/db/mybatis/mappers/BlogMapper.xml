@@ -20,6 +20,7 @@
         <if test="user_id != null">
             where user_id = #{user_id}
         </if>
+        order by blog.updated_at desc
         limit ${offset}, #{limit}
     </select>
     <select id="countBlog" resultType="int">
@@ -45,6 +46,11 @@
                                  ON blog.user_id = user.id
         WHERE blog.id = #{id}
     </select>
+    <insert id="insertBlog" parameterType="hello.entity.Blog" useGeneratedKeys="true" keyProperty="id" keyColumn="id ">
+        INSERT INTO blog (user_id, title, description, content, created_at, updated_at)
+        values (#{userId}, #{title}, #{description}, #{content}, now(), now())
+
+    </insert>
     <resultMap id="blog" type="hello.entity.Blog">
         <id property="id" column="blog_id"/>
         <result property="title" column="blog_title"/>
