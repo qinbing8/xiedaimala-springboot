@@ -1,7 +1,6 @@
 package hello.dao;
 
 import hello.entity.Blog;
-import hello.entity.BlogResult;
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -9,7 +8,6 @@ import org.springframework.stereotype.Service;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.inject.Inject;
 
 @Service
 public class BlogDao {
@@ -47,5 +45,10 @@ public class BlogDao {
     public Blog insertBlog(Blog newBlog) {
         sqlSession.insert("insertBlog", newBlog);
         return selectBlogById(newBlog.getId());
+    }
+
+    public Blog updateBlog(Blog targetBlgo) {
+        sqlSession.update("updateBlog", targetBlgo);
+        return selectBlogById(targetBlgo.getId());
     }
 }

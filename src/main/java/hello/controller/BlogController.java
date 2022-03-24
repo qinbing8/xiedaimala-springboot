@@ -9,7 +9,13 @@ import hello.service.BlogService;
 import hello.utils.AssertUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.inject.Inject;
 import java.util.Map;
@@ -52,6 +58,18 @@ public class BlogController {
         } catch (IllegalArgumentException e) {
             return BlogResult.failure(e);
         }
+    }
+
+    @PatchMapping("/blog/{blogId}")
+    @ResponseBody
+    public BlogResult updateBlog(@PathVariable("blogId") int blogId, @RequestBody Map<String, String> parm) {
+        try {
+            return authService.getCurrentUser()
+                    .map(user -> blogService.updateBlog(blogId, fromParam(parm, user)))
+                    .orElse(BlogResult.failure("登录后才能操作"));
+        } catch (IllegalArgumentException e) {
+            return BlogResult.failure(e);
+        }
 
     }
 
@@ -72,7 +90,6 @@ public class BlogController {
         blog.setContent(content);
         blog.setDescription(description);
         blog.setUser(user);
-
 
         return blog;
     }

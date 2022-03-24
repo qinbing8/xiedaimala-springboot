@@ -1,7 +1,5 @@
 package hello.entity;
 
-import java.util.List;
-
 public class BlogResult extends Result<Blog> {
 
     public static BlogResult success(Blog data) {
@@ -20,7 +18,7 @@ public class BlogResult extends Result<Blog> {
         super(status, msg, data);
     }
 
-    public static BlogResult failure(IllegalArgumentException e) {
+    public static BlogResult failure(Exception e) {
         return new BlogResult(ResultStatus.FAIL, e.getMessage(), null);
     }
 }

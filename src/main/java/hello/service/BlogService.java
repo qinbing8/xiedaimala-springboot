@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class BlogService {
@@ -53,4 +54,21 @@ public class BlogService {
     }
 
 
+    public BlogResult updateBlog(int blogId, Blog targetBlog) {
+
+        Blog blogDb = blogDao.selectBlogById(blogId);
+        if (blogDb == null) {
+            return BlogResult.failure("博客不存在");
+        }
+
+        if (!Objects.equals(blogId, blogDb.getId())) {
+            return BlogResult.failure("无法修改别人的博客");
+        }
+        try {
+            targetBlog.setId(blogId);
+            return BlogResult.success("修改成功", blogDao.updateBlog(targetBlog));
+        } catch (Exception e) {
+            return BlogResult.failure(e);
+        }
+    }
 }
