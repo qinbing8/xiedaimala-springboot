@@ -4,6 +4,7 @@ import hello.dao.BlogDao;
 import hello.entity.Blog;
 import hello.entity.BlogListResult;
 import hello.entity.BlogResult;
+import hello.entity.User;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -67,6 +68,24 @@ public class BlogService {
         try {
             targetBlog.setId(blogId);
             return BlogResult.success("修改成功", blogDao.updateBlog(targetBlog));
+        } catch (Exception e) {
+            return BlogResult.failure(e);
+        }
+    }
+
+    public BlogResult deleteBlog(int blogId, User user) {
+        Blog blogDb = blogDao.selectBlogById(blogId);
+        System.out.println(blogDb);
+        if (blogDb == null) {
+            return BlogResult.failure("博客不存在");
+        }
+
+        if (!Objects.equals(user.getId(), blogDb.getUserId())) {
+            return BlogResult.failure("无法修改别人的博客");
+        }
+        try {
+            blogDao.delteBlog(blogId);
+            return BlogResult.success("删除成功", null);
         } catch (Exception e) {
             return BlogResult.failure(e);
         }

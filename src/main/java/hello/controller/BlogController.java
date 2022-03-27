@@ -9,6 +9,7 @@ import hello.service.BlogService;
 import hello.utils.AssertUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -70,7 +71,19 @@ public class BlogController {
         } catch (IllegalArgumentException e) {
             return BlogResult.failure(e);
         }
+    }
 
+    @DeleteMapping("/blog/{blogId}")
+    @ResponseBody
+    public BlogResult deleteBlog(@PathVariable("blogId") int blogId) {
+        try {
+
+            return authService.getCurrentUser()
+                    .map(user -> blogService.deleteBlog(blogId, user))
+                    .orElse(BlogResult.failure("登录后才能操作"));
+        } catch (IllegalArgumentException e) {
+            return BlogResult.failure(e);
+        }
     }
 
     private Blog fromParam(Map<String, String> param, User user) {
@@ -89,6 +102,7 @@ public class BlogController {
         blog.setTitle(title);
         blog.setContent(content);
         blog.setDescription(description);
+        blog.setUserId(user.getId());
         blog.setUser(user);
 
         return blog;

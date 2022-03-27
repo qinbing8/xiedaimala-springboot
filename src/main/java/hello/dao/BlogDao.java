@@ -19,15 +19,15 @@ public class BlogDao {
     }
 
     public List<Blog> getBlogs(Integer page, Integer pageSize, Integer userId) {
-        Map<String, Object> parameters = new HashMap<>();
-        parameters.put("user_id", userId);
-        parameters.put("offset", (page - 1) * pageSize);
-        parameters.put("limit", pageSize);
+        Map<String, Object> parameters = asMap(
+                "user_id", userId,
+                "offset", (page - 1) * pageSize,
+                "limit", pageSize);
         return sqlSession.selectList("selectBlog", parameters);
     }
 
     public int count(Integer userId) {
-        return sqlSession.selectOne("countBlog", userId);
+        return sqlSession.selectOne("countBlog", asMap("userId", userId));
     }
 
     public Blog selectBlogById(Integer id) {
@@ -50,5 +50,9 @@ public class BlogDao {
     public Blog updateBlog(Blog targetBlgo) {
         sqlSession.update("updateBlog", targetBlgo);
         return selectBlogById(targetBlgo.getId());
+    }
+
+    public void delteBlog(int blogId) {
+        sqlSession.delete("deleteBlog", blogId);
     }
 }
