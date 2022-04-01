@@ -1,6 +1,10 @@
 package hello.integration;
 
 import hello.Application;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -11,10 +15,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import javax.inject.Inject;
 import java.io.IOException;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
+import java.util.Objects;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -23,15 +24,34 @@ public class MyIntegrationTest {
     @Inject
     Environment environment;
 
+    OkHttpClient client = new OkHttpClient();
+
+
     @Test
     public void notLoggedInByDefault() throws IOException, InterruptedException {
         String port = environment.getProperty("local.server.port");
-        HttpClient client = HttpClient.newHttpClient();
-        HttpRequest request = HttpRequest.newBuilder()
-            .uri(URI.create("http://localhost:" + port + "/auth"))
-            .build();
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        Assertions.assertEquals(200, response.statusCode());
-        Assertions.assertTrue(response.body().contains("用户没有登录"));
+
+        String url = "http://localhost:" + port + "/auth";
+
+        Request request = new Request.Builder()
+                .url(url)
+                .build();
+
+        Response response = client.newCall(request).execute();
+        ResponseBody body = response.body();
+
+        Assertions.assertEquals(200, response.code());
+        Assertions.assertNotNull(body);
+        Assertions.assertTrue(body.string().contains("用户没有登录"));
+
+        // use Java 11
+        //String port = environment.getProperty("local.server.port");
+        //HttpClient client = HttpClient.newHttpClient();
+        //HttpRequest request = HttpRequest.newBuilder()
+        //        .uri(URI.create("http://localhost:" + port + "/auth"))
+        //        .build();
+        //HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        //Assertions.assertEquals(200, response.statusCode());
+        //Assertions.assertTrue(response.body().contains("用户没有登录"));
     }
 }
