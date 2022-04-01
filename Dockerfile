@@ -1,11 +1,11 @@
-FROM java:openjdk-8u212-alpine
+FROM openjdk:8u212-alpine
 
 RUN mkdir /app
 
 WORKDIR /app
 
-COPY target/gs-spring-boot-0.1.0.jar /app
+COPY target/spring-boot-0.0.1-SNAPSHOT.jar /app
 
-EXPOSE 8080
+EXPOSE 8081
 
-CMD [ "java", "-jar", "gs-spring-boot-0.1.0.jar" ]
+CMD [ "java", "-jar", "spring-boot-0.0.1-SNAPSHOT.jar" ]

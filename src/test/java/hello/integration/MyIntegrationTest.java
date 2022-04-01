@@ -15,7 +15,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import javax.inject.Inject;
 import java.io.IOException;
-import java.util.Objects;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -24,11 +23,10 @@ public class MyIntegrationTest {
     @Inject
     Environment environment;
 
-    OkHttpClient client = new OkHttpClient();
-
-
     @Test
     public void notLoggedInByDefault() throws IOException, InterruptedException {
+        OkHttpClient client = new OkHttpClient();
+
         String port = environment.getProperty("local.server.port");
 
         String url = "http://localhost:" + port + "/auth";
